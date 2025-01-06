@@ -121,7 +121,7 @@ async function processAddresses() {
 
     // Print final results
     console.log('\n=== Final Results ===');
-    console.log(`Mode: ${isTestMode ? `Test (First ${testQty} addresses)` : 'Full Audit'}`);
+    console.log(`                 Mode: ${isTestMode ? `Test (First ${testQty} addresses)` : 'Full Audit'}`);
     console.log(`   Addresses Verified: ${walletCountBTC}`);
     console.log(` BTC Balance (bridge): ${walletBalanceBTC.toFixed(8)} BTC`);
     console.log(`   BTC Minted (chain): ${supplyBTC.toFixed(8)} BTC`);
