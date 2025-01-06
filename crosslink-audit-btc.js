@@ -9,6 +9,11 @@ let walletBalanceBTC = 0;
 let walletCountBTC = 0;
 let processedAddresses = [];
 
+// Get command line arguments
+const args = process.argv.slice(2);
+const testQty = parseInt(args[0]);
+const isTestMode = !isNaN(testQty) && testQty > 0;
+
 // Function to fetch BTC balance for an address
 async function getBTCBalance(address) {
     try {
@@ -63,6 +68,7 @@ async function getBTCSupply() {
 async function processAddresses() {
     let hasMore = true;
     let nextKey = null;
+    let addressCount = 0;
 
     while (hasMore) {
         const data = await fetchAccounts(nextKey);
@@ -79,13 +85,22 @@ async function processAddresses() {
 
                 walletBalanceBTC += balance;
                 walletCountBTC++;
+                addressCount++;
 
                 console.log(`Address: ${row.btc_address}, Balance: ${balance} BTC`);
+
+                // If in test mode and we've processed the specified number of addresses, break
+                if (isTestMode && addressCount >= testQty) {
+                    hasMore = false;
+                    break;
+                }
             }
         }
 
-        hasMore = data.more;
-        nextKey = data.next_key;
+        if (!isTestMode) {
+            hasMore = data.more;
+            nextKey = data.next_key;
+        }
 
         // Add a small delay to avoid rate limiting
         await new Promise(resolve => setTimeout(resolve, 1000));
@@ -97,6 +112,7 @@ async function processAddresses() {
 
     // Print final results
     console.log('\n=== Final Results ===');
+    console.log(`Mode: ${isTestMode ? `Test (First ${testQty} addresses)` : 'Full Audit'}`);
     console.log(`Addresses Verified: ${walletCountBTC}`);
     console.log(`BTC Balance (bridge): ${walletBalanceBTC.toFixed(8)} BTC`);
     console.log(`BTC Minted (chain): ${supplyBTC.toFixed(8)} BTC`);
@@ -104,7 +120,7 @@ async function processAddresses() {
 }
 
 // Start the process
-console.log('Starting BTC address verification...\n');
+console.log(`Starting BTC address verification in ${isTestMode ? `TEST mode (${testQty} addresses)` : 'FULL mode'}...\n`);
 processAddresses().catch(error => {
     console.error('Fatal error:', error);
 }); 
