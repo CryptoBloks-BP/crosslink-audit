@@ -6,12 +6,13 @@ Audit Libre Crosslink Bridge BTC Balances
 
 npm install
 
-# To run in test mode
+# To run
 
-node crosslink-audit-btc.js test 50
+you can run the script in these ways:
 
-Change the number to the number of addresses you want to audit.
+Full mode: node crosslink-audit-btc.js
 
-# To run in full mode
+Test mode with specific quantity: node crosslink-audit-btc.js 25 (processes first 25 addresses)
 
-node crosslink-audit-btc.js
+Test mode with different quantity: node crosslink-audit-btc.js 100 (processes first 100 addresses)
+If you provide an invalid number (0, negative, or non-numeric), it will run in full mode.
