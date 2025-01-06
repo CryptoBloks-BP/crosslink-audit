@@ -45,6 +45,20 @@ async function fetchAccounts(nextKey = null) {
     }
 }
 
+// Function to fetch BTC circulating supply from the Libre Chain
+async function getBTCSupply() {
+    try {
+        const response = await axios.post(`${apiUrl}/v1/chain/get_currency_stats`, {
+            code: "btc.libre",
+            symbol: "BTC"
+        });
+        return parseFloat(response.data.BTC.supply);
+    } catch (error) {
+        console.error('Error fetching BTC supply:', error.message);
+        return 0;
+    }
+}
+
 // Main processing function
 async function processAddresses() {
     let hasMore = true;
@@ -77,10 +91,16 @@ async function processAddresses() {
         await new Promise(resolve => setTimeout(resolve, 1000));
     }
 
+    // Get BTC supply
+    const supplyBTC = await getBTCSupply();
+    const diffBTC = walletBalanceBTC - supplyBTC;
+
     // Print final results
     console.log('\n=== Final Results ===');
-    console.log(`Total Addresses Verified: ${walletCountBTC}`);
-    console.log(`Total BTC Balance: ${walletBalanceBTC.toFixed(8)} BTC`);
+    console.log(`Addresses Verified: ${walletCountBTC}`);
+    console.log(`BTC Balance (bridge): ${walletBalanceBTC.toFixed(8)} BTC`);
+    console.log(`BTC Minted (chain): ${supplyBTC.toFixed(8)} BTC`);
+    console.log(`BTC Difference (bridge - chain): ${diffBTC.toFixed(8)} BTC`);
 }
 
 // Start the process
