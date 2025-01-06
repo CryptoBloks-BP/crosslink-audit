@@ -120,7 +120,7 @@ async function processAddresses() {
     const diffBTC = walletBalanceBTC - supplyBTC;
 
     // Print final results
-    console.log('\n=== Final Results ===');
+    console.log('\n            === Final Results ===');
     console.log(`                 Mode: ${isTestMode ? `Test (First ${testQty} addresses)` : 'Full Audit'}`);
     console.log(`   Addresses Verified: ${walletCountBTC}`);
     console.log(` BTC Balance (bridge): ${walletBalanceBTC.toFixed(8)} BTC`);
