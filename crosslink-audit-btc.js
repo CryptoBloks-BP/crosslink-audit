@@ -8,6 +8,7 @@ const btcExplorerApi = 'https://blockchain.info/balance';
 let walletBalanceBTC = 0;
 let walletCountBTC = 0;
 let processedAddresses = [];
+let nonZeroBalances = [];
 
 // Get command line arguments
 const args = process.argv.slice(2);
@@ -83,6 +84,14 @@ async function processAddresses() {
                     balance: balance
                 });
 
+                // Add to nonZeroBalances array if balance is greater than 0
+                if (balance > 0) {
+                    nonZeroBalances.push({
+                        address: row.btc_address,
+                        balance: balance
+                    });
+                }
+
                 walletBalanceBTC += balance;
                 walletCountBTC++;
                 addressCount++;
@@ -117,6 +126,17 @@ async function processAddresses() {
     console.log(` BTC Balance (bridge): ${walletBalanceBTC.toFixed(8)} BTC`);
     console.log(`   BTC Minted (chain): ${supplyBTC.toFixed(8)} BTC`);
     console.log(`Diff (bridge - chain): ${diffBTC.toFixed(8)} BTC`);
+
+    // Add this section to print non-zero balances
+    console.log('\n=== Addresses with Non-Zero Balances ===');
+    if (nonZeroBalances.length === 0) {
+        console.log('No addresses found with non-zero balances');
+    } else {
+        nonZeroBalances.sort((a, b) => b.balance - a.balance); // Sort by balance descending
+        nonZeroBalances.forEach(item => {
+            console.log(`Address: ${item.address}, Balance: ${item.balance.toFixed(8)} BTC`);
+        });
+    }
 }
 
 // Start the process
