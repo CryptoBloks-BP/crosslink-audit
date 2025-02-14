@@ -120,7 +120,7 @@ async function processAddresses() {
     for (const account of allLibreAccounts) {
         const balance = await getBTCBalance(account.btc_address);
         const username = account.account;
-        const paddedUsername = (username + ',').padEnd(12, ' '); // Add comma and pad to 12 characters
+        const paddedUsername = (username + ',').padEnd(14, ' '); // Add comma and pad to 14 characters
         processedAddresses.push({
             address: account.btc_address,
             balance: balance,
@@ -167,7 +167,7 @@ async function processAddresses() {
     } else {
         nonZeroBalances.sort((a, b) => b.balance - a.balance); // Sort by balance descending
         nonZeroBalances.forEach(item => {
-            const paddedUsername = (item.username + ',').padEnd(13, ' '); // Add comma and pad to 13 characters
+            const paddedUsername = (item.username + ',').padEnd(14, ' '); // Add comma and pad to 14 characters
             console.log(`Address: ${item.address}, User: ${paddedUsername} Balance: ${item.balance.toFixed(8)} BTC`);
         });
     }
