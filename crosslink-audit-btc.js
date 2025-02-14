@@ -110,7 +110,7 @@ async function processAddresses() {
     for (const account of allLibreAccounts) {
         const balance = await getBTCBalance(account.btc_address);
         const username = account.account;
-        const paddedUsername = (username + ',').padEnd(13, ' '); // Add comma and pad to 13 characters
+        const paddedUsername = (username + ',').padEnd(12, ' '); // Add comma and pad to 12 characters
         processedAddresses.push({
             address: account.btc_address,
             balance: balance,
