@@ -1,8 +1,10 @@
 const axios = require('axios');
 
 // API Configuration
-const apiUrl = 'https://lb.libre.org';
-const btcExplorerApi = 'https://blockchain.info/balance';
+const testnetApiUrl = 'https://api.testnet.libre.cryptobloks.io';
+const mainnetApiUrl = 'https://api.libre.cryptobloks.io';
+const mainnetBtcExplorerApi = 'https://mempool.space/api/address';
+const signetBtcExplorerApi = 'https://mempool.space/signet/api/address';
 
 // Global tracking variables
 let walletBalanceBTC = 0;
@@ -12,14 +14,22 @@ let nonZeroBalances = [];
 
 // Get command line arguments
 const args = process.argv.slice(2);
-const testQty = parseInt(args[0]);
+const isTestnet = args.includes('testnet');
+const testQtyIndex = isTestnet ? args.indexOf('testnet') + 1 : 0;
+const testQty = parseInt(args[testQtyIndex]);
 const isTestMode = !isNaN(testQty) && testQty > 0;
+
+// Choose the correct API URL based on the network
+const apiUrl = isTestnet ? testnetApiUrl : mainnetApiUrl;
+const btcExplorerApi = isTestnet ? signetBtcExplorerApi : mainnetBtcExplorerApi;
 
 // Function to fetch BTC balance for an address
 async function getBTCBalance(address) {
     try {
-        const response = await axios.get(`${btcExplorerApi}?active=${address}`);
-        const balance = response.data[address].final_balance / 100000000; // Convert satoshis to BTC
+        const response = await axios.get(`${btcExplorerApi}/${address}`);
+        const fundedSum = response.data.chain_stats.funded_txo_sum;
+        const spentSum = response.data.chain_stats.spent_txo_sum;
+        const balance = (fundedSum - spentSum) / 100000000; // Convert satoshis to BTC
         return balance;
     } catch (error) {
         console.error(`Error fetching BTC balance for ${address}:`, error.message);
@@ -164,7 +174,7 @@ async function processAddresses() {
 }
 
 // Start the process
-console.log(`Starting BTC address verification in ${isTestMode ? `TEST mode (${testQty} addresses)` : 'FULL mode'}...\n`);
+console.log(`Starting BTC address verification in ${isTestMode ? `TEST mode (${testQty} addresses)` : 'FULL mode'} on ${isTestnet ? 'TESTNET' : 'MAINNET'}...\n`);
 processAddresses().catch(error => {
     console.error('Fatal error:', error);
 }); 
