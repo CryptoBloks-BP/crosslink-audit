@@ -27,6 +27,38 @@ async function getBTCBalance(address) {
     }
 }
 
+// Function to fetch all Libre account data
+async function fetchAllLibreAccounts() {
+    try {
+        const payload = {
+            code: "x.libre",
+            table: "accounts",
+            scope: "x.libre",
+            limit: 1000,
+            json: true
+        };
+
+        let allAccounts = [];
+        let hasMore = true;
+        let nextKey = null;
+
+        while (hasMore) {
+            if (nextKey) {
+                payload.lower_bound = nextKey;
+            }
+            const response = await axios.post(`${apiUrl}/v1/chain/get_table_rows`, payload);
+            allAccounts = allAccounts.concat(response.data.rows);
+            hasMore = response.data.more;
+            nextKey = response.data.next_key;
+        }
+
+        return allAccounts;
+    } catch (error) {
+        console.error('Error fetching all Libre accounts:', error.message);
+        return [];
+    }
+}
+
 // Function to fetch accounts from EOSIO blockchain
 async function fetchAccounts(nextKey = null) {
     try {
@@ -71,48 +103,39 @@ async function processAddresses() {
     let nextKey = null;
     let addressCount = 0;
 
-    while (hasMore) {
-        const data = await fetchAccounts(nextKey);
-        if (!data) break;
+    // Fetch all Libre accounts once
+    const allLibreAccounts = await fetchAllLibreAccounts();
 
-        // Process each address in the current batch
-        for (const row of data.rows) {
-            if (row.btc_address) {
-                const balance = await getBTCBalance(row.btc_address);
-                processedAddresses.push({
-                    address: row.btc_address,
-                    balance: balance
-                });
+    // Process each address from the pre-fetched accounts
+    for (const account of allLibreAccounts) {
+        const balance = await getBTCBalance(account.btc_address);
+        const username = account.account;
+        const paddedUsername = (username + ',').padEnd(13, ' '); // Add comma and pad to 13 characters
+        processedAddresses.push({
+            address: account.btc_address,
+            balance: balance,
+            username: username
+        });
 
-                // Add to nonZeroBalances array if balance is greater than 0
-                if (balance > 0) {
-                    nonZeroBalances.push({
-                        address: row.btc_address,
-                        balance: balance
-                    });
-                }
-
-                walletBalanceBTC += balance;
-                walletCountBTC++;
-                addressCount++;
-
-                console.log(`Address: ${row.btc_address}, Balance: ${balance} BTC`);
-
-                // If in test mode and we've processed the specified number of addresses, break
-                if (isTestMode && addressCount >= testQty) {
-                    hasMore = false;
-                    break;
-                }
-            }
+        // Add to nonZeroBalances array if balance is greater than 0
+        if (balance > 0) {
+            nonZeroBalances.push({
+                address: account.btc_address,
+                balance: balance,
+                username: username
+            });
         }
 
-        if (!isTestMode) {
-            hasMore = data.more;
-            nextKey = data.next_key;
-        }
+        walletBalanceBTC += balance;
+        walletCountBTC++;
+        addressCount++;
 
-        // Add a small delay to avoid rate limiting
-        await new Promise(resolve => setTimeout(resolve, 1000));
+        console.log(`Address: ${account.btc_address}, User: ${paddedUsername} Balance: ${balance} BTC`);
+
+        // If in test mode and we've processed the specified number of addresses, break
+        if (isTestMode && addressCount >= testQty) {
+            break;
+        }
     }
 
     // Get BTC supply
@@ -134,7 +157,8 @@ async function processAddresses() {
     } else {
         nonZeroBalances.sort((a, b) => b.balance - a.balance); // Sort by balance descending
         nonZeroBalances.forEach(item => {
-            console.log(`Address: ${item.address}, Balance: ${item.balance.toFixed(8)} BTC`);
+            const paddedUsername = (item.username + ',').padEnd(13, ' '); // Add comma and pad to 13 characters
+            console.log(`Address: ${item.address}, User: ${paddedUsername} Balance: ${item.balance.toFixed(8)} BTC`);
         });
     }
 }
