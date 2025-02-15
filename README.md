@@ -1,6 +1,6 @@
 # crosslink-audit
 
-Audit Libre Crosslink Bridge BTC and CBTC Balances
+Audit Libre Crosslink Bridge BTC, CBTC, and USDT Balances
 
 # Environment Configuration
 
