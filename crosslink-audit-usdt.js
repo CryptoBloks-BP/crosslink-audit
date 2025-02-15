@@ -18,6 +18,7 @@ const config = {
 };
 
 async function getEthereumBalance(contractAddress) {
+    console.log(``);
     console.log(`Fetching USDT balance for Ethereum bridge contract: ${contractAddress}`);
     try {
         const url = isTestnet
@@ -46,13 +47,14 @@ async function getEthereumBalance(contractAddress) {
 
         return usdtBalance;
     } catch (error) {
-        console.error(`Error fetching USDT balance: ${error.message}`);
+        console.error(`Error fetching USDT balance for Ethereum bridge contract: ${contractAddress}: ${error.message}`);
         return 0;
     }
 }
 
 async function getLibreAccounts() {
-    console.log('Fetching Libre accounts with USDT balances...');
+    console.log(``);
+    console.log(`Fetching Libre accounts registered with the USDT contract: usdt.libre`);
     let totalUSDT = 0;
     try {
         const accountNames = await getAllAccountNames();
@@ -76,13 +78,17 @@ async function getLibreAccounts() {
 
         return totalUSDT;
     } catch (error) {
-        console.error(`Error fetching Libre accounts: ${error.message}`);
+        console.error(`Error fetching Libre accounts registered with the USDT contract: usdt.libre: ${error.message}`);
         return 0;
     }
 }
 
 async function getAllAccountNames() {
-    console.log('Retrieving all account names from usdt.libre contract...');
+    console.log(``);
+    console.log('Fetching USDT balances for Libre accounts registered with the USDT contract: usdt.libre');
+    console.log(``);
+    console.log(`=== USDT Balances for Libre Users ===`);
+    console.log(``);
     const accountNames = [];
     let more = true;
     let nextKey = '';
@@ -107,13 +113,14 @@ async function getAllAccountNames() {
 
         return accountNames;
     } catch (error) {
-        console.error(`Error retrieving account names: ${error.message}`);
+        console.error(`Error USDT balances for Libre accounts registered with the USDT contract: ${error.message}`);
         return [];
     }
 }
 
 async function getCirculatingSupply() {
-    console.log('Fetching circulating supply of USDT on Libre...');
+    console.log(``);
+    console.log('Fetching circulating supply of USDT on Libre');
     try {
         const response = await axios.post(`${config.libreApiUrl}/v1/chain/get_currency_stats`, {
             code: 'usdt.libre',
@@ -129,16 +136,18 @@ async function getCirculatingSupply() {
 }
 
 async function auditUSDT() {
-    console.log(`Starting USDT audit on ${isTestnet ? 'TESTNET' : 'MAINNET'}...`);
+    console.log(`Starting USDT audit on ${isTestnet ? 'TESTNET' : 'MAINNET'}`);
 
     const ethereumBalance = await getEthereumBalance(config.ethereumContract);
     const totalUSDTInAccounts = await getLibreAccounts();
     const circulatingSupply = await getCirculatingSupply();
 
     console.log('\n=== USDT Audit Report ===');
+    console.log(``);
     console.log(`Ethereum Contract Balance: ${ethereumBalance} USDT`);
     console.log(`Total USDT in Libre Accounts: ${totalUSDTInAccounts} USDT`);
     console.log(`Circulating Supply on Libre: ${circulatingSupply} USDT`);
+    console.log(``);
 }
 
 auditUSDT().catch(error => {
