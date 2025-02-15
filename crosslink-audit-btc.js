@@ -1,8 +1,8 @@
-const axios = require('axios');
+require('dotenv').config();
 
 // API Configuration
-const testnetApiUrl = 'https://api.testnet.libre.cryptobloks.io';
-const mainnetApiUrl = 'https://api.libre.cryptobloks.io';
+const testnetApiUrl = process.env.LIBRE_API_URL_TESTNET;
+const mainnetApiUrl = process.env.LIBRE_API_URL_MAINNET;
 const mainnetBtcExplorerApi = 'https://mempool.space/api/address';
 const signetBtcExplorerApi = 'https://mempool.space/signet/api/address';
 

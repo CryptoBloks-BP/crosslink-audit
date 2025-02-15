@@ -1,43 +1,52 @@
 const axios = require('axios');
 const { ethers } = require('ethers');
+require('dotenv').config();
 
 // Configuration
-const mainnetConfig = {
-    ethereumContract: '0xB7bBd4B494740EB374852b866eFAB2C1194A0e90',
-    libreApiUrl: 'https://api.libre.cryptobloks.io',
+const ALCHEMY_API_KEY = process.env.ALCHEMY_API_KEY;
+const usdtTokenAddressMainnet = process.env.USDT_TOKEN_ADDRESS_MAINNET;
+const usdtTokenAddressSepolia = process.env.USDT_TOKEN_ADDRESS_SEPOLIA;
+const ethereumContractMainnet = process.env.ETHEREUM_CONTRACT_MAINNET;
+const ethereumContractSepolia = process.env.ETHEREUM_CONTRACT_SEPOLIA;
+const libreApiUrlMainnet = process.env.LIBRE_API_URL_MAINNET;
+const libreApiUrlTestnet = process.env.LIBRE_API_URL_TESTNET;
+
+const isTestnet = process.argv.slice(2).includes('testnet');
+const config = {
+    ethereumContract: isTestnet ? ethereumContractSepolia : ethereumContractMainnet,
+    libreApiUrl: isTestnet ? libreApiUrlTestnet : libreApiUrlMainnet,
 };
-
-const testnetConfig = {
-    ethereumContract: '0x1e4A123a59c718EFa16F5240C34D8099f7B9F0A6',
-    libreApiUrl: 'https://api.testnet.libre.cryptobloks.io',
-};
-
-// Determine network
-const args = process.argv.slice(2);
-const isTestnet = args.includes('testnet');
-const config = isTestnet ? testnetConfig : mainnetConfig;
-
-// Add your Infura or Alchemy API key here
-const INFURA_PROJECT_ID = 'your_infura_project_id';
-
-// USDT token addresses on Ethereum mainnet and Sepolia
-const usdtTokenAddressMainnet = '0xdAC17F958D2ee523a2206206994597C13D831ec7';
-const usdtTokenAddressSepolia = '0xaa8e23fb1079ea71e0a56f48a2aa51851d8433d0';
 
 async function getEthereumBalance(contractAddress) {
-    console.log(`Fetching Ethereum balance for contract: ${contractAddress}`);
+    console.log(`Fetching USDT balance for Ethereum bridge contract: ${contractAddress}`);
     try {
-        const tokenAddress = isTestnet ? usdtTokenAddressSepolia : usdtTokenAddressMainnet;
-        const apiUrl = isTestnet
-            ? `https://test.tokenbalance.com/token/${tokenAddress}/${contractAddress}`
-            : `https://api.tokenbalance.com/token/${tokenAddress}/${contractAddress}`;
+        const url = isTestnet
+            ? `https://eth-sepolia.g.alchemy.com/v2/${ALCHEMY_API_KEY}`
+            : `https://eth-mainnet.g.alchemy.com/v2/${ALCHEMY_API_KEY}`;
 
-        const response = await axios.get(apiUrl);
-        const balance = parseFloat(response.data.balance) / 1e18; // Convert from Wei to Ether
+        const headers = {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        };
 
-        return balance;
+        const body = JSON.stringify({
+            id: 1,
+            jsonrpc: "2.0",
+            method: "alchemy_getTokenBalances",
+            params: [
+                contractAddress,
+                "erc20"
+            ]
+        });
+
+        const response = await axios.post(url, body, { headers });
+        const data = response.data;
+        const usdtBalanceHex = data.result.tokenBalances.find(token => token.contractAddress.toLowerCase() === (isTestnet ? usdtTokenAddressSepolia : usdtTokenAddressMainnet).toLowerCase()).tokenBalance;
+        const usdtBalance = parseFloat(ethers.utils.formatUnits(usdtBalanceHex, 6));
+
+        return usdtBalance;
     } catch (error) {
-        console.error(`Error fetching Ethereum balance: ${error.message}`);
+        console.error(`Error fetching USDT balance: ${error.message}`);
         return 0;
     }
 }
