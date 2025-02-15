@@ -18,6 +18,8 @@ LIBRE_API_URL_TESTNET=your_libre_api_url_testnet
 
 You can use the `.env.example` file as a template to create your `.env` file. Ensure that you replace placeholder values with your actual configuration values.
 
+The USDT audit scripts require active Alchemy API Keys. You can get one at https://www.alchemy.com/
+
 # To install
 
 npm install
