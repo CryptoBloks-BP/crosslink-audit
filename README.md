@@ -28,6 +28,20 @@ To run the CBTC audit script, use the following command:
 
 This will execute the audit process for CBTC balances.
 
+## Running the USDT Audit
+
+To run the USDT audit script, use the following command:
+
+`node crosslink-audit-usdt.js`
+
+This will execute the audit process for USDT balances on both Mainnet and Sepolia testnet, depending on the presence of the 'testnet' flag.
+
+Example:
+- Mainnet: `node crosslink-audit-usdt.js`
+- Testnet: `node crosslink-audit-usdt.js testnet`
+
+The script will output the Ethereum contract balance, total USDT in Libre accounts, and the circulating supply on Libre.
+
 # Changes Made
 
 - Added support for running the script on both Mainnet and Signet testnet.
