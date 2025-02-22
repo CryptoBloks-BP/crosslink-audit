@@ -15,6 +15,7 @@ const isTestnet = process.argv.slice(2).includes('testnet');
 const config = {
     ethereumContract: isTestnet ? ethereumContractSepolia : ethereumContractMainnet,
     libreApiUrl: isTestnet ? libreApiUrlTestnet : libreApiUrlMainnet,
+    usdtTokenAddress: isTestnet ? usdtTokenAddressSepolia : usdtTokenAddressMainnet,
 };
 
 async function getEthereumBalance(contractAddress) {
@@ -42,7 +43,7 @@ async function getEthereumBalance(contractAddress) {
 
         const response = await axios.post(url, body, { headers });
         const data = response.data;
-        const usdtBalanceHex = data.result.tokenBalances.find(token => token.contractAddress.toLowerCase() === (isTestnet ? usdtTokenAddressSepolia : usdtTokenAddressMainnet).toLowerCase()).tokenBalance;
+        const usdtBalanceHex = data.result.tokenBalances.find(token => token.contractAddress.toLowerCase() === config.usdtTokenAddress.toLowerCase()).tokenBalance;
         const usdtBalance = parseFloat(ethers.utils.formatUnits(usdtBalanceHex, 6));
 
         return usdtBalance;

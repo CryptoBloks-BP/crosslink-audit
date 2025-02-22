@@ -4,8 +4,8 @@ require('dotenv').config();
 // API Configuration
 const testnetApiUrl = process.env.LIBRE_API_URL_TESTNET;
 const mainnetApiUrl = process.env.LIBRE_API_URL_MAINNET;
-const mainnetBtcExplorerApi = 'https://mempool.space/api/address';
-const signetBtcExplorerApi = 'https://mempool.space/signet/api/address';
+const mainnetBtcExplorerApi = process.env.BTC_EXPLORER_API_MAINNET;
+const signetBtcExplorerApi = process.env.BTC_EXPLORER_API_SIGNET;
 
 // Global tracking variables
 let walletBalanceBTC = 0;
