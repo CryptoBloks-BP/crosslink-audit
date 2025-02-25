@@ -3,10 +3,10 @@ require('dotenv').config();
 const axios = require('axios');
 
 // API Configuration
-const testnetApiUrl = process.env.LIBRE_API_URL_TESTNET;
-const mainnetApiUrl = process.env.LIBRE_API_URL_TESTNET;
+const testnetApiUrl = process.env.LIBRE_API_TESTNET;
+const mainnetApiUrl = process.env.LIBRE_API_MAINNET;
 const mainnetBtcExplorerApi = process.env.BTC_EXPLORER_API_MAINNET;
-const signetBtcExplorerApi = process.env.BTC_EXPLORER_API_SIGNET;
+const testnetBtcExplorerApi = process.env.BTC_EXPLORER_API_TESTNET;
 
 // Global tracking variables
 let walletBalanceBTC = 0;
@@ -23,7 +23,7 @@ const isTestMode = !isNaN(testQty) && testQty > 0;
 
 // Choose the correct API URL based on the network
 const apiUrl = isTestnet ? testnetApiUrl : mainnetApiUrl;
-const btcExplorerApi = isTestnet ? signetBtcExplorerApi : mainnetBtcExplorerApi;
+const btcExplorerApi = isTestnet ? testnetBtcExplorerApi : mainnetBtcExplorerApi;
 
 // Function to fetch BTC balance for an address
 async function getBTCBalance(address) {

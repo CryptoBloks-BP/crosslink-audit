@@ -3,29 +3,31 @@ const { ethers } = require('ethers');
 require('dotenv').config();
 
 // Configuration
-const ALCHEMY_API_KEY = process.env.ALCHEMY_API_KEY;
-const usdtTokenAddressMainnet = process.env.USDT_TOKEN_ADDRESS_MAINNET;
-const usdtTokenAddressSepolia = process.env.USDT_TOKEN_ADDRESS_SEPOLIA;
-const ethereumContractMainnet = process.env.ETHEREUM_CONTRACT_MAINNET;
-const ethereumContractSepolia = process.env.ETHEREUM_CONTRACT_SEPOLIA;
-const libreApiUrlMainnet = process.env.LIBRE_API_URL_MAINNET;
-const libreApiUrlTestnet = process.env.LIBRE_API_URL_TESTNET;
+const alchemyApiKey = process.env.ALCHEMY_API_KEY;
+const usdtTokenAddressMainnet = process.env.ETH_USDT_TOKEN_CONTRACT_MAINNET;
+const usdtTokenAddressTestnet = process.env.ETH_USDT_TOKEN_CONTRACT_TESTNET;
+const ethereumContractMainnet = process.env.ETH_BRIDGE_CONTRACT_MAINNET;
+const ethereumContractTestnet = process.env.ETH_BRIDGE_CONTRACT_TESTNET;
+const ethereumRpcMainnet = process.env.ETH_RPC_MAINNET;
+const ethereumRpcTestnet = process.env.ETH_RPC_TESTNET;
+const libreApiUrlMainnet = process.env.LIBRE_API_MAINNET;
+const libreApiUrlTestnet = process.env.LIBRE_API_TESTNET;
 
 const isTestnet = process.argv.slice(2).includes('testnet');
 const config = {
-    ethereumContract: isTestnet ? ethereumContractSepolia : ethereumContractMainnet,
+    ethereumRpc: isTestnet ? ethereumRpcTestnet : ethereumRpcMainnet,
+    ethereumContract: isTestnet ? ethereumContractTestnet : ethereumContractMainnet,
     libreApiUrl: isTestnet ? libreApiUrlTestnet : libreApiUrlMainnet,
-    usdtTokenAddress: isTestnet ? usdtTokenAddressSepolia : usdtTokenAddressMainnet,
+    usdtTokenAddress: isTestnet ? usdtTokenAddressTestnet : usdtTokenAddressMainnet,
 };
 
 async function getEthereumBalance(contractAddress) {
     console.log(``);
     console.log(`Fetching USDT balance for Ethereum bridge contract: ${contractAddress}`);
+    console.log(`Using RPC URL: ${config.ethereumRpc}`);
     try {
-        const url = isTestnet
-            ? `https://eth-sepolia.g.alchemy.com/v2/${ALCHEMY_API_KEY}`
-            : `https://eth-mainnet.g.alchemy.com/v2/${ALCHEMY_API_KEY}`;
-
+        const url = `${config.ethereumRpc}/${alchemyApiKey}`;
+        console.log(`Using Ethereum RPC URL: ${url}`);
         const headers = {
             'Accept': 'application/json',
             'Content-Type': 'application/json'
@@ -145,9 +147,9 @@ async function auditUSDT() {
 
     console.log('\n=== USDT Audit Report ===');
     console.log(``);
-    console.log(`Ethereum Contract Balance: ${ethereumBalance} USDT`);
-    console.log(`Total USDT in Libre Accounts: ${totalUSDTInAccounts} USDT`);
-    console.log(`Circulating Supply on Libre: ${circulatingSupply} USDT`);
+    console.log(`   Ethereum Contract Balance: ${ethereumBalance.toFixed(6)} USDT`);
+    console.log(`Total USDT in Libre Accounts: ${totalUSDTInAccounts.toFixed(6)} USDT`);
+    console.log(` Circulating Supply on Libre: ${circulatingSupply.toFixed(6)} USDT`);
     console.log(``);
 }
 
