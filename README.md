@@ -66,6 +66,21 @@ You can run the USDT audit script in these ways:
 - Audit on Mainnet: `node crosslink-audit-usdt.js`
 - Audit on Testnet: `node crosslink-audit-usdt.js testnet`
 
+## Running the Account Balance Checker
+
+The account balance checker is a utility script that checks Bitcoin balances for a list of Libre accounts. To use it:
+
+1. Create a text file with one Libre account name per line
+2. Run the script:
+```bash
+node account-balance-checker.js <input_file> <output_file>
+```
+
+The script will generate a CSV file containing:
+- Account names
+- Associated Bitcoin addresses (or "none" if not found)
+- Current Bitcoin balances
+
 # Recent Changes
 
 - Updated environment variable names for clarity and consistency.
@@ -73,3 +88,4 @@ You can run the USDT audit script in these ways:
 - Rounded totals in the USDT audit report to 6 decimal places (Match USDT precision).
 - Corrected the API URL configuration in the CBTC audit script.
 - Removed unused BTC bridge contract accounts from the `.env` files.
+- Added new account-balance-checker.js utility script for checking Bitcoin balances of Libre accounts.
