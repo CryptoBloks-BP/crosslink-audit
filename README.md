@@ -81,6 +81,31 @@ The script will generate a CSV file containing:
 - Associated Bitcoin addresses (or "none" if not found)
 - Current Bitcoin balances
 
+## Fetching All Accounts
+
+To download a list of all accounts from the x.libre contract:
+
+1. Make the script executable:
+```bash
+chmod +x fetch-accounts.sh
+```
+
+2. Run the script:
+- For mainnet (default):
+```bash
+./fetch-accounts.sh
+```
+- For testnet:
+```bash
+./fetch-accounts.sh testnet
+```
+
+The script will create an `accounts.txt` file containing all account names, one per line.
+
+Requirements:
+- `curl` for making HTTP requests
+- `jq` for JSON processing
+
 # Recent Changes
 
 - Updated environment variable names for clarity and consistency.
@@ -89,3 +114,4 @@ The script will generate a CSV file containing:
 - Corrected the API URL configuration in the CBTC audit script.
 - Removed unused BTC bridge contract accounts from the `.env` files.
 - Added new account-balance-checker.js utility script for checking Bitcoin balances of Libre accounts.
+- Added fetch-accounts.sh script to download all accounts from the x.libre contract.
