@@ -75,7 +75,8 @@ async function getLibreAccounts() {
                 const balance = parseFloat(row.balance.split(' ')[0]);
                 totalUSDT += balance;
                 const paddedAccount = account.padEnd(14, ' ');
-                console.log(`Account: ${paddedAccount} Balance: ${balance} USDT`);
+                const paddedBalance = balance.toFixed(6).padStart(15, ' ');
+                console.log(`Account: ${paddedAccount} Balance:${paddedBalance} USDT`);
             }
         }
 
