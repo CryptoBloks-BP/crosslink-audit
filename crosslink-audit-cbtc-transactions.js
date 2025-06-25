@@ -86,7 +86,7 @@ async function getAddressTransactions(address) {
 function analyzeDuplicateOutputTransactions(transactions, walletAddress, libreAccount) {
     let foundInThisAddress = 0;
     
-    transactions.forEach(tx => {
+    transactions.forEach((tx, index) => {
         if (tx.vout && Array.isArray(tx.vout)) {
             // Count outputs to this specific wallet address
             const outputsToAddress = tx.vout.filter(output => output.scriptpubkey_address === walletAddress);
@@ -172,17 +172,19 @@ async function processAddresses() {
             
             console.log(`  Found ${transactions.length} transaction(s)`);
             
+            // Always add the address to processed addresses, regardless of transaction count
+            let foundOutputs = 0;
             if (transactions.length > 0) {
                 // Analyze for duplicate block transactions
-                const foundOutputs = analyzeDuplicateOutputTransactions(transactions, walletAddress, libreAccount);
-                
-                processedAddresses.push({
-                    address: walletAddress,
-                    account: libreAccount,
-                    transactionCount: transactions.length,
-                    foundOutputs: foundOutputs
-                });
+                foundOutputs = analyzeDuplicateOutputTransactions(transactions, walletAddress, libreAccount);
             }
+            
+            processedAddresses.push({
+                address: walletAddress,
+                account: libreAccount,
+                transactionCount: transactions.length,
+                foundOutputs: foundOutputs
+            });
 
             addressCount++;
 
