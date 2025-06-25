@@ -200,25 +200,25 @@ async function processAddresses() {
     duplicateBlockTransactions.sort((a, b) => a.timestamp - b.timestamp);
 
     // Print final results
-    console.log('\n            === Final Results ===');
-    console.log(`                 Mode: ${specificWalletAddress ? 'Specific Address Test' : (isTestMode ? `Test (First ${testQty} addresses)` : 'Full Audit')}`);
-    console.log(`   Addresses Processed: ${processedAddresses.length}`);
-    console.log(`Total Outputs Found: ${duplicateBlockTransactions.length}`);
-    console.log(`Transactions with Multiple Outputs: ${new Set(duplicateBlockTransactions.map(tx => tx.transactionHash)).size}`);
+    console.log('\n              === Final Results ===');
+    console.log(`                   Mode: ${specificWalletAddress ? 'Specific Address Test' : (isTestMode ? `Test (First ${testQty} addresses)` : 'Full Audit')}`);
+    console.log(`    Addresses Processed: ${processedAddresses.length}`);
+    console.log(`    Total Outputs Found: ${duplicateBlockTransactions.length}`);
+    console.log(`TXs w/ Multiple Outputs: ${new Set(duplicateBlockTransactions.map(tx => tx.transactionHash)).size}`);
 
     // Print detailed report
     if (duplicateBlockTransactions.length > 0) {
         console.log('\n=== CBTC Transactions with Multiple Outputs to Same Address ===');
-        console.log('Timestamp           | Block | Transaction Hash                    | Wallet Address                    | Amount (BTC) | Output # | Libre Account');
-        console.log('--------------------|-------|-----------------------------------|-----------------------------------|--------------|----------|-------------');
+        console.log('Timestamp           | Block  | Transaction Hash                                                 | Wallet Address                             | Amount (BTC)   | Output # | Libre Account');
+        console.log('--------------------|--------|------------------------------------------------------------------|--------------------------------------------|----------------|----------|--------------');
         
         duplicateBlockTransactions.forEach(tx => {
             const timestamp = new Date(tx.timestamp * 1000).toISOString().replace('T', ' ').substring(0, 19);
-            const paddedAmount = tx.amount.toFixed(8).padStart(15, ' ');
+            const paddedAmount = tx.amount.toFixed(8).padStart(16, ' ');
             const paddedOutputIndex = tx.outputIndex.toString().padStart(8, ' ');
             const paddedAccount = tx.libreAccount.padEnd(14, ' ');
             
-            console.log(`${timestamp} | ${tx.blockNumber.toString().padStart(5, ' ')} | ${tx.transactionHash.padEnd(35, ' ')} | ${tx.walletAddress.padEnd(35, ' ')} |${paddedAmount} | ${paddedOutputIndex} | ${paddedAccount}`);
+            console.log(`${timestamp} | ${tx.blockNumber.toString().padStart(6, ' ')} | ${tx.transactionHash.padEnd(64, ' ')} | ${tx.walletAddress.padEnd(42, ' ')} |${paddedAmount} | ${paddedOutputIndex} | ${paddedAccount}`);
         });
     } else {
         console.log('\nNo CBTC transactions found with multiple outputs to the same address.');
