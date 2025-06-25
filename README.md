@@ -66,6 +66,69 @@ You can run the USDT audit script in these ways:
 - Audit on Mainnet: `node crosslink-audit-usdt.js`
 - Audit on Testnet: `node crosslink-audit-usdt.js testnet`
 
+## Running the Transaction Analysis Scripts
+
+The transaction analysis scripts identify Bitcoin transactions that have multiple outputs to the same wallet address. This can be useful for detecting potential issues or unusual patterns in bridge wallet transactions.
+
+### BTC Transaction Analysis
+
+Analyzes transactions for BTC bridge wallet addresses (x.libre contract):
+
+```bash
+# Full audit on mainnet
+node crosslink-audit-btc-transactions.js
+
+# Full audit on testnet
+node crosslink-audit-btc-transactions.js testnet
+
+# Test mode (first 5 addresses) on mainnet
+node crosslink-audit-btc-transactions.js testnet 5
+
+# Test with specific wallet address
+node crosslink-audit-btc-transactions.js --address=bc1qqxll86lflpq7hnhrjrv96hjjemeswvec4932p2
+```
+
+### CBTC Transaction Analysis
+
+Analyzes transactions for CBTC bridge wallet addresses (v.libre contract):
+
+```bash
+# Full audit on mainnet
+node crosslink-audit-cbtc-transactions.js
+
+# Full audit on testnet
+node crosslink-audit-cbtc-transactions.js testnet
+
+# Test mode (first 5 addresses) on mainnet
+node crosslink-audit-cbtc-transactions.js testnet 5
+
+# Test with specific wallet address
+node crosslink-audit-cbtc-transactions.js --address=bc1qqxll86lflpq7hnhrjrv96hjjemeswvec4932p2
+```
+
+### Transaction Analysis Output
+
+The scripts provide detailed reports including:
+
+- **Progress tracking**: Shows which addresses are being processed
+- **Transaction counts**: Number of transactions found per address
+- **Multiple outputs detection**: Real-time alerts when found
+- **Detailed report**: Timestamp, block number, transaction hash, wallet address, BTC amount, output index, and Libre account name
+
+Example output:
+```
+Processing address 1/344: bc1qqxll86lflpq7hnhrjrv96hjjemeswvec4932p2 (account1)
+  Found 3 transaction(s)
+
+  *** FOUND MULTIPLE OUTPUTS ***
+  Transaction: 81a80daf22d39862b6bd5d60fab4bf9f2e123d47194048b416d53ec81a822955
+  Block: 895067, Time: 2024-01-15T10:30:45.000Z
+  Outputs to bc1qqxll86lflpq7hnhrjrv96hjjemeswvec4932p2: 2
+    Output 0: 0.00320051 BTC
+    Output 1: 0.00026253 BTC
+  Total outputs found for this address: 2
+```
+
 ## Running the Account Balance Checker
 
 The account balance checker is a utility script that checks Bitcoin balances for a list of Libre accounts. To use it:
@@ -115,3 +178,5 @@ Requirements:
 - Removed unused BTC bridge contract accounts from the `.env` files.
 - Added new account-balance-checker.js utility script for checking Bitcoin balances of Libre accounts.
 - Added fetch-accounts.sh script to download all accounts from the x.libre contract.
+- Added transaction analysis scripts for detecting multiple outputs to the same address in BTC and CBTC bridge transactions.
+- Enhanced transaction analysis with real-time detection and detailed reporting capabilities.
