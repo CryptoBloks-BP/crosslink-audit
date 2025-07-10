@@ -3,3 +3,4 @@
 .env
 accounts.txt
 results.csv
+.DS_Store
