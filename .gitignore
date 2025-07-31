@@ -4,3 +4,4 @@
 accounts.txt
 results.csv
 .DS_Store
+*.csv
